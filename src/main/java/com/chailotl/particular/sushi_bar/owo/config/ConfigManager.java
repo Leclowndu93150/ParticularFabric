@@ -7,35 +7,50 @@ import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ConfigManager {
+    private static final Logger LOGGER = LoggerFactory.getLogger("particular-config");
     private static ConfigHolder<ParticularConfig> holder;
 
     public static void init() {
-        holder = AutoConfig.register(ParticularConfig.class, JanksonConfigSerializer::new);
+        try {
+            LOGGER.info("Initializing Particular config...");
 
-        GuiRegistry registry = AutoConfig.getGuiRegistry(ParticularConfig.class);
+            holder = AutoConfig.register(ParticularConfig.class, JanksonConfigSerializer::new);
 
-        registry.registerPredicateProvider(
-                (translationKey, field, config, defaults, guiProvider) -> {
-                    if (field.getName().equals("excludeBiomes") && List.class.isAssignableFrom(field.getType())) {
-                        return Collections.singletonList(
-                                ConfigEntryBuilder.create()
-                                        .startStrList(Text.translatable(translationKey), getIdentifierStrings(config))
-                                        .setDefaultValue(getIdentifierStrings(defaults))
-                                        .setSaveConsumer(strings -> setIdentifierStrings(config, strings))
-                                        .setTooltip(Text.translatable(translationKey + ".tooltip"))
-                                        .build()
-                        );
-                    }
-                    return Collections.emptyList();
-                },
-                field -> field.getName().equals("excludeBiomes")
-        );
+            LOGGER.info("Config registered successfully");
+
+            GuiRegistry registry = AutoConfig.getGuiRegistry(ParticularConfig.class);
+
+            registry.registerPredicateProvider(
+                    (translationKey, field, config, defaults, guiProvider) -> {
+                        if (field.getName().equals("excludeBiomes") && List.class.isAssignableFrom(field.getType())) {
+                            return Collections.singletonList(
+                                    ConfigEntryBuilder.create()
+                                            .startStrList(Text.translatable(translationKey), getIdentifierStrings(config))
+                                            .setDefaultValue(getIdentifierStrings(defaults))
+                                            .setSaveConsumer(strings -> setIdentifierStrings(config, strings))
+                                            .setTooltip(Text.translatable(translationKey + ".tooltip"))
+                                            .build()
+                            );
+                        }
+                        return Collections.emptyList();
+                    },
+                    field -> field.getName().equals("excludeBiomes")
+            );
+
+            LOGGER.info("Config GUI registry set up successfully");
+
+        } catch (Exception e) {
+            LOGGER.error("Failed to initialize config", e);
+            throw new RuntimeException("Config initialization failed", e);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -44,23 +59,37 @@ public class ConfigManager {
             ParticularConfig.CaveDustSettings settings = ((ParticularConfig) config).advancedSettings.caveDustSettings;
             return settings.excludeBiomes;
         } catch (Exception e) {
+            LOGGER.warn("Failed to get identifier strings from config", e);
             return Collections.emptyList();
         }
     }
 
     private static void setIdentifierStrings(Object config, List<String> strings) {
-        ParticularConfig.CaveDustSettings settings = ((ParticularConfig) config).advancedSettings.caveDustSettings;
-        settings.excludeBiomes = strings.stream()
-                .filter(s -> Identifier.tryParse(s) != null)
-                .collect(Collectors.toList());
+        try {
+            ParticularConfig.CaveDustSettings settings = ((ParticularConfig) config).advancedSettings.caveDustSettings;
+            settings.excludeBiomes = strings.stream()
+                    .filter(s -> Identifier.tryParse(s) != null)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            LOGGER.warn("Failed to set identifier strings in config", e);
+        }
     }
 
     public static ParticularConfig getConfig() {
+        if (holder == null) {
+            LOGGER.warn("Config holder is null, initializing...");
+            init();
+        }
         return holder.getConfig();
     }
 
     public static void save() {
-        holder.save();
+        if (holder != null) {
+            holder.save();
+            LOGGER.info("Config saved");
+        } else {
+            LOGGER.warn("Cannot save config - holder is null");
+        }
     }
 
     public static float getFireflyGrassChance() {
