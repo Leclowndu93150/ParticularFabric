@@ -4,6 +4,8 @@ import com.chailotl.particular.compat.RegionsUnexplored;
 import com.chailotl.particular.compat.Traverse;
 import com.chailotl.particular.compat.WilderWild;
 import com.chailotl.particular.mixin.AccessorBiome;
+import com.chailotl.particular.sushi_bar.owo.config.ConfigManager;
+import com.chailotl.particular.sushi_bar.owo.config.ParticularConfig;
 import net.fabricmc.api.ClientModInitializer;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
@@ -41,17 +43,21 @@ public class Main implements ClientModInitializer
 {
 	public static final String MOD_ID = "particular";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-	public static final com.chailotl.particular.ParticularConfig CONFIG = com.chailotl.particular.ParticularConfig.createAndLoad();
 
 	public static Identifier currentDimension;
 	public static ConcurrentHashMap<BlockPos, Integer> cascades = new ConcurrentHashMap<>();
 	private static float fireflyFrequency = 1f;
+
+	public static ParticularConfig CONFIG;
 
 	private static Map<Block, LeafData> leavesData = new HashMap<>();
 
 	@Override
 	public void onInitializeClient()
 	{
+
+		ConfigManager.init();
+		CONFIG = ConfigManager.getConfig();
 		LOGGER.info("I am quite particular about the effects I choose to add :3");
 
 		// Populate leaves data
@@ -88,7 +94,7 @@ public class Main implements ClientModInitializer
 
 		// Client events
 		ClientChunkEvents.CHUNK_LOAD.register((world, chunk) -> {
-			if (!Main.CONFIG.cascades()) { return; }
+			if (!Main.CONFIG.enabledEffects.cascades) { return; }
 
 			// Changing dimensions doesn't count as unloading chunks so I need to do this test
 			Identifier newDimension = world.getDimension().effects();
@@ -104,7 +110,7 @@ public class Main implements ClientModInitializer
 		});
 
 		ClientChunkEvents.CHUNK_UNLOAD.register((world, chunk) -> {
-			if (!Main.CONFIG.cascades()) { return; }
+			if (!Main.CONFIG.enabledEffects.cascades) { return; }
 
 			cascades.forEach((pos, strength) -> {
 				if (world.getChunk(pos).getPos().equals(chunk.getPos()))
@@ -122,15 +128,15 @@ public class Main implements ClientModInitializer
 			Random random = world.random;
 
 			// Set firefly frequency
-			if (world.getTimeOfDay() == CONFIG.fireflySettings.startTime())
+			if (world.getTimeOfDay() == CONFIG.advancedSettings.fireflySettings.startTime)
 			{
-				fireflyFrequency = CONFIG.fireflySettings.dailyRandom().get(random.nextInt(CONFIG.fireflySettings.dailyRandom().size()));
+				fireflyFrequency = CONFIG.advancedSettings.fireflySettings.dailyRandom.get(random.nextInt(CONFIG.advancedSettings.fireflySettings.dailyRandom.size()));
 
 				//LOGGER.info(fireflyFrequency + "");
 			}
 
 			// Cascades
-			if (!Main.CONFIG.cascades()) { return; }
+			if (!Main.CONFIG.enabledEffects.cascades) { return; }
 
 			cascades.forEach((pos, strength) -> {
 				float height = world.getFluidState(pos.up()).getHeight();
@@ -270,15 +276,15 @@ public class Main implements ClientModInitializer
 
 		Biome biome = world.getBiome(pos).value();
 		float downfall = ((AccessorBiome)(Object) biome).getWeather().downfall();
-		if ((!world.isRaining() || CONFIG.fireflySettings.canSpawnInRain()) &&
+		if ((!world.isRaining() || CONFIG.advancedSettings.fireflySettings.canSpawnInRain) &&
 			random.nextInt(30 - (int)(10 * downfall)) == 0)
 		{
 			long time = world.getTimeOfDay();
 			float temp = biome.getTemperature();
-			if (time >= CONFIG.fireflySettings.startTime() &&
-				time <= CONFIG.fireflySettings.endTime() &&
-				temp >= CONFIG.fireflySettings.minTemp() &&
-				temp <= CONFIG.fireflySettings.maxTemp())
+			if (time >= CONFIG.advancedSettings.fireflySettings.startTime &&
+				time <= CONFIG.advancedSettings.fireflySettings.endTime &&
+				temp >= CONFIG.advancedSettings.fireflySettings.minTemp &&
+				temp <= CONFIG.advancedSettings.fireflySettings.maxTemp)
 			{
 				world.addParticleClient(Particles.FIREFLY, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 0, 0, 0);
 			}

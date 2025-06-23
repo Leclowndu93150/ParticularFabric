@@ -81,9 +81,9 @@ public class LeafParticle extends SpriteBillboardParticle
 			expiring = true;
 			age = maxAge - fadeOutDuration;
 			y += 0.01d;
-			if (Main.CONFIG.fallingLeavesSettings.layFlatOnGround())
+			if (Main.CONFIG.advancedSettings.fallingLeavesSettings.layFlatOnGround)
 			{
-				if (Main.CONFIG.fallingLeavesSettings.layFlatRightAngles())
+				if (Main.CONFIG.advancedSettings.fallingLeavesSettings.layFlatRightAngles)
 				{
 					angle = (float)(random.nextInt(4) / 2.0 * Math.PI);
 				}
@@ -103,7 +103,7 @@ public class LeafParticle extends SpriteBillboardParticle
 			if (gravityStrength > 0)
 			{
 				y = pos.getY() + fluidState.getHeight(world, pos);
-				if (Main.CONFIG.fallingLeavesSettings.spawnRipples())
+				if (Main.CONFIG.advancedSettings.fallingLeavesSettings.spawnRipples)
 				{
 					world.addParticleClient(Particles.WATER_RIPPLE, x, y, z, 0, 0, 0);
 				}
@@ -141,7 +141,7 @@ public class LeafParticle extends SpriteBillboardParticle
 		Vector3f[] vector3fs;
 		float j = getSize(tickDelta);
 
-		if (!expiring || !Main.CONFIG.fallingLeavesSettings.layFlatOnGround())
+		if (!expiring || !Main.CONFIG.advancedSettings.fallingLeavesSettings.layFlatOnGround)
 		{
 			vector3fs = new Vector3f[]{new Vector3f(1.0F, -1.0F, 0.0F), new Vector3f(1.0F, 1.0F, 0.0F), new Vector3f(-1.0F, 1.0F, 0.0F), new Vector3f(-1.0F, -1.0F, 0.0F)};
 

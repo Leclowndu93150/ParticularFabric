@@ -25,7 +25,7 @@ public abstract class InjectBubbleColumnUpParticle extends SpriteBillboardPartic
 		at = @At("TAIL"))
 	private void releaseBubbles(CallbackInfo ci)
 	{
-		if (!Main.CONFIG.poppingBubbles()) { return; }
+		if (!Main.CONFIG.enabledEffects.poppingBubbles) { return; }
 
 		if (this.dead)
 		{

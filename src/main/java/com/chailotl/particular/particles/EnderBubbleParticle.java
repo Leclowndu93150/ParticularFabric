@@ -25,7 +25,7 @@ public class EnderBubbleParticle extends BubbleColumnUpParticle
 	{
 		super.tick();
 
-		if (!Main.CONFIG.poppingBubbles()) { return; }
+		if (!Main.CONFIG.enabledEffects.poppingBubbles) { return; }
 
 		if (this.dead)
 		{

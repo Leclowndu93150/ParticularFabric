@@ -23,7 +23,7 @@ public class InjectWaterFluid
 		at = @At("TAIL"))
 	private void waterParticles(World world, BlockPos pos, FluidState state, Random random, CallbackInfo ci)
 	{
-		if (!Main.CONFIG.waterfallSpray()) { return; }
+		if (!Main.CONFIG.enabledEffects.waterfallSpray) { return; }
 
 		if (!state.isStill() &&
 			world.getFluidState(pos.down()).isIn(FluidTags.WATER))

@@ -2,6 +2,7 @@ package com.chailotl.particular.mixin;
 
 import com.chailotl.particular.Main;
 import com.chailotl.particular.Particles;
+import com.chailotl.particular.sushi_bar.owo.config.ConfigManager;
 import net.minecraft.block.*;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
@@ -22,7 +23,7 @@ public class InjectBlock
 	private static boolean isValidBiome(RegistryEntry<Biome> biome)
 	{
 		var key = biome.getKey();
-		return key.map(biomeRegistryKey -> !Main.CONFIG.caveDustSettings.excludeBiomes().contains(biomeRegistryKey.getValue())).orElse(true);
+		return key.map(biomeRegistryKey -> !Main.CONFIG.advancedSettings.caveDustSettings.excludeBiomes.contains(biomeRegistryKey.getValue())).orElse(true);
 	}
 
 	@Inject(at = @At("TAIL"), method = "randomDisplayTick")
@@ -30,26 +31,26 @@ public class InjectBlock
 	{
 		Block block = state.getBlock();
 
-		if (Main.CONFIG.fireflies())
+		if (Main.CONFIG.enabledEffects.fireflies)
 		{
 			// Fireflies
 			double val = random.nextDouble();
-			if ((block == Blocks.GRASS_BLOCK && val < Main.CONFIG.fireflySettings.grass()) ||
-				(block == Blocks.TALL_GRASS && val < Main.CONFIG.fireflySettings.tallGrass()) ||
-				(block instanceof FlowerBlock && val < Main.CONFIG.fireflySettings.flowers()) ||
-				(block instanceof TallFlowerBlock && val < Main.CONFIG.fireflySettings.tallFlowers()))
+			if ((block == Blocks.GRASS_BLOCK && val < ConfigManager.getFireflyGrassChance()) ||
+				(block == Blocks.TALL_GRASS && val < ConfigManager.getFireflyTallGrassChance()) ||
+				(block instanceof FlowerBlock && val < ConfigManager.getFireflyTallFlowersChance()) ||
+				(block instanceof TallFlowerBlock && val < ConfigManager.getFireflyTallFlowersChance()))
 			{
 				Main.spawnFirefly(world, pos, random);
 				return;
 			}
 		}
 
-		if (Main.CONFIG.caveDust())
+		if (Main.CONFIG.enabledEffects.caveDust)
 		{
 			// Cave dust
 			if (block == Blocks.AIR || block == Blocks.CAVE_AIR)
 			{
-				if (random.nextInt(Main.CONFIG.caveDustSettings.spawnChance()) == 0 && pos.getY() < world.getSeaLevel() && isValidBiome(world.getBiome(pos)))
+				if (random.nextInt(Main.CONFIG.advancedSettings.caveDustSettings.spawnChance) == 0 && pos.getY() < world.getSeaLevel() && isValidBiome(world.getBiome(pos)))
 				{
 					float lightChance = 1f - Math.min(8, world.getLightLevel(LightType.SKY, pos)) / 8f;
 					float depthChance = Math.min(1f, (world.getSeaLevel() - pos.getY()) / 96f);

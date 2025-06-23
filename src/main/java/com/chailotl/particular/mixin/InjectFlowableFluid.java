@@ -19,7 +19,7 @@ public class InjectFlowableFluid
 		at = @At("TAIL"))
 	protected void spawnCascades(ServerWorld world, BlockPos pos, BlockState blockState, FluidState fluidState, CallbackInfo ci)
 	{
-		if (!Main.CONFIG.cascades()) { return; }
+		if (!Main.CONFIG.enabledEffects.cascades) { return; }
 
 		Main.updateCascade(world, pos, fluidState);
 	}

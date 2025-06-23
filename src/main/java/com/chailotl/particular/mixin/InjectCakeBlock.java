@@ -21,7 +21,7 @@ public class InjectCakeBlock
 	@Inject(at = @At("TAIL"), method = "tryEat")
 	private static void makeSounds(WorldAccess world, BlockPos pos, BlockState state, PlayerEntity player, CallbackInfoReturnable<ActionResult> cir)
 	{
-		if (!Main.CONFIG.cakeEatingParticles()) { return; }
+		if (!Main.CONFIG.enabledEffects.cakeEatingParticles) { return; }
 
 		ItemStack cake = Items.CAKE.getDefaultStack();
 		player.playSound(SoundEvents.ENTITY_GENERIC_EAT.value(), 1f, 1f);

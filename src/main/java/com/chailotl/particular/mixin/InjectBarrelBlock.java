@@ -27,7 +27,7 @@ public class InjectBarrelBlock
 		at = @At("HEAD"))
 	private void releaseBubbles(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir)
 	{
-		if (!Main.CONFIG.barrelBubbles()) { return; }
+		if (!Main.CONFIG.enabledEffects.barrelBubbles) { return; }
 
 		Direction direction = state.get(Properties.FACING);
 

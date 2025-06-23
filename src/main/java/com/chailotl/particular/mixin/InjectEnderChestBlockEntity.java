@@ -46,7 +46,7 @@ public abstract class InjectEnderChestBlockEntity extends BlockEntity implements
 		at = @At("TAIL"))
 	private static void randomlyOpen(World world, BlockPos pos, BlockState state, InjectEnderChestBlockEntity blockEntity, CallbackInfo ci)
 	{
-		if (!Main.CONFIG.soulSandBubbles()) { return; }
+		if (!Main.CONFIG.enabledEffects.soulSandBubbles) { return; }
 
 		if (!state.get(Properties.WATERLOGGED) ||
 			world.getBlockState(pos.down()).getBlock() != Blocks.SOUL_SAND ||

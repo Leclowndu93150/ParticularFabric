@@ -27,7 +27,7 @@ public class InjectChestBlock
 		at = @At("HEAD"))
 	private void releaseBubbles(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir)
 	{
-		if (!Main.CONFIG.chestBubbles()) { return; }
+		if (!Main.CONFIG.enabledEffects.chestBubbles) { return; }
 		if (!state.get(Properties.WATERLOGGED))
 		{
 			return;

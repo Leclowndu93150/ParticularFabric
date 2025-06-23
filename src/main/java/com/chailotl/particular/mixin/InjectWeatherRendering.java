@@ -22,7 +22,7 @@ public class InjectWeatherRendering
 			)
 	)
 	private SimpleParticleType modifyParticleEffect(SimpleParticleType original, @Local FluidState fluidState) {
-		if (fluidState.isIn(FluidTags.WATER) && Main.CONFIG.rainRipples())
+		if (fluidState.isIn(FluidTags.WATER) && Main.CONFIG.enabledEffects.rainRipples)
 		{
 			return Particles.WATER_RIPPLE;
 		}

@@ -1,7 +1,7 @@
 package com.chailotl.particular.particles;
 
 import com.chailotl.particular.Main;
-import io.wispforest.owo.ui.core.Color;
+import com.chailotl.particular.sushi_bar.owo.config.Color;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.particle.*;
@@ -14,14 +14,14 @@ public class CaveDustParticle extends AscendingParticle
 {
 	protected CaveDustParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, float scaleMultiplier, SpriteProvider spriteProvider)
 	{
-		super(world, x, y, z, 0, 0, 0, velocityX, velocityY, velocityZ, scaleMultiplier, spriteProvider, 0, Main.CONFIG.caveDustSettings.baseMaxAge(), 0, true);
+		super(world, x, y, z, 0, 0, 0, velocityX, velocityY, velocityZ, scaleMultiplier, spriteProvider, 0, Main.CONFIG.advancedSettings.caveDustSettings.baseMaxAge, 0, true);
 
-		Color color = Main.CONFIG.caveDustSettings.color();
+		Color color = Color.ofArgb(Main.CONFIG.advancedSettings.caveDustSettings.color);
 		red = color.red();
 		green = color.green();
 		blue = color.blue();
 
-		gravityStrength = (random.nextFloat() - 0.5f) * Main.CONFIG.caveDustSettings.maxAcceleration();
+		gravityStrength = (random.nextFloat() - 0.5f) * Main.CONFIG.advancedSettings.caveDustSettings.maxAcceleration;
 	}
 
 	@Override
@@ -29,12 +29,12 @@ public class CaveDustParticle extends AscendingParticle
 	{
 		super.tick();
 
-		if (random.nextInt(Main.CONFIG.caveDustSettings.accelChangeChance()) == 0)
+		if (random.nextInt(Main.CONFIG.advancedSettings.caveDustSettings.accelChangeChance) == 0)
 		{
-			gravityStrength = (random.nextFloat() - 0.5f) * Main.CONFIG.caveDustSettings.maxAcceleration();
+			gravityStrength = (random.nextFloat() - 0.5f) * Main.CONFIG.advancedSettings.caveDustSettings.maxAcceleration;
 		}
 
-		int fadeDuration = Main.CONFIG.caveDustSettings.fadeDuration();
+		int fadeDuration = Main.CONFIG.advancedSettings.caveDustSettings.fadeDuration;
 
 		if (age <= fadeDuration)
 		{

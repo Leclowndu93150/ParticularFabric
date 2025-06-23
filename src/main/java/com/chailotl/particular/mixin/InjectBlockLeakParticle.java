@@ -17,7 +17,7 @@ public class InjectBlockLeakParticle
 		cancellable = true)
 	public void getBrightness(float tint, CallbackInfoReturnable<Integer> cir)
 	{
-		if (!Main.CONFIG.emissiveLavaDrips()) { return; }
+		if (!Main.CONFIG.enabledEffects.emissiveLavaDrips) { return; }
 
 		if (((AccessorBlockLeakParticle) this).getFluid().matchesType(Fluids.LAVA))
 		{
